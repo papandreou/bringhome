@@ -1,0 +1,55 @@
+{
+  "name": "bringhome",
+  "version": "0.0.0",
+  "description": "Download a web page to a local directory",
+  "engines": {
+    "node": ">=8.0.0"
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "test": "npm run lint && mocha",
+    "travis": "npm run lint && npm run coverage",
+    "coverage": "nyc --reporter=lcov --reporter=text -- mocha --reporter dot"
+  },
+  "bin": {
+    "bringhome": "lib/cli.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/papandreou/bringhome.git"
+  },
+  "keywords": [
+    "http",
+    "mirror",
+    "html",
+    "local"
+  ],
+  "author": "Andreas Lind <andreaslindpetersen@gmail.com>",
+  "license": "BSD-3-Clause",
+  "bugs": {
+    "url": "https://github.com/papandreou/bringhome/issues"
+  },
+  "homepage": "https://github.com/papandreou/bringhome#readme",
+  "dependencies": {
+    "@gustavnikolaj/async-main-wrap": "^1.0.1",
+    "assetgraph": "^4.11.0",
+    "lodash.uniq": "^4.5.0",
+    "urltools": "^0.3.5",
+    "yargs": "^11.0.0"
+  },
+  "devDependencies": {
+    "coveralls": "^3.0.0",
+    "eslint": "^4.19.0",
+    "eslint-config-pretty-standard": "^1.3.0",
+    "eslint-plugin-prettier": "^2.6.0",
+    "gettemporaryfilepath": "^1.0.0",
+    "httpception": "^1.0.2",
+    "mocha": "^5.0.4",
+    "nyc": "^11.6.0",
+    "prettier": "^1.11.1",
+    "rimraf": "^2.6.2",
+    "sinon": "^6.1.3",
+    "unexpected": "^10.37.2",
+    "unexpected-sinon": "^10.10.1"
+  }
+}
