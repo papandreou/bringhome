@@ -167,4 +167,59 @@ describe('main', function() {
       `alert('Hello, world!');`
     );
   });
+
+  describe('in selfContained:true mode', function() {
+    it('should inline all referenced assets and output a single file', async function() {
+      httpception([
+        {
+          request: 'GET https://example.com/',
+          response: {
+            headers: {
+              'Content-Type': 'text/html; charset=utf-8'
+            },
+            body: `
+              <!DOCTYPE html>
+              <html>
+              <head></head>
+              <body><script src="scripts/script.js"></body>
+              </html>
+            `
+          }
+        },
+        {
+          request: 'GET https://example.com/scripts/script.js',
+          response: {
+            headers: {
+              'Content-Type': 'application/javascript'
+            },
+            body: `
+              alert('Hello, world!');
+            `
+          }
+        }
+      ]);
+
+      await main(
+        {
+          selfContained: true,
+          inputUrls: ['https://example.com/'],
+          output: `${outputDir}/single.html`
+        },
+        console
+      );
+
+      expect(await readdirAsync(pathModule.resolve(outputDir)), 'to equal', [
+        'single.html'
+      ]);
+
+      expect(
+        await readFileAsync(
+          pathModule.resolve(outputDir, 'single.html'),
+          'utf-8'
+        ),
+        'to contain',
+        `alert('Hello, world!');`
+      );
+    });
+  });
 });
