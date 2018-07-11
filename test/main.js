@@ -222,4 +222,48 @@ describe('main', function() {
       );
     });
   });
+
+  describe('in omitScripts:true mode', function() {
+    it('should strip references to JavaScript', async function() {
+      httpception([
+        {
+          request: 'GET https://example.com/',
+          response: {
+            headers: {
+              'Content-Type': 'text/html; charset=utf-8'
+            },
+            body: `
+              <!DOCTYPE html>
+              <html>
+              <head></head>
+              <body><script src="scripts/script.js"></body>
+              </html>
+            `
+          }
+        }
+      ]);
+
+      await main(
+        {
+          omitScripts: true,
+          inputUrls: ['https://example.com/'],
+          output: outputDir
+        },
+        console
+      );
+
+      expect(await readdirAsync(pathModule.resolve(outputDir)), 'to equal', [
+        'index.html'
+      ]);
+
+      expect(
+        await readFileAsync(
+          pathModule.resolve(outputDir, 'index.html'),
+          'utf-8'
+        ),
+        'not to contain',
+        `<script`
+      );
+    });
+  });
 });
