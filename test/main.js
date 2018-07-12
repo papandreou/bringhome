@@ -372,7 +372,6 @@ describe('main', function() {
           request: {
             url: 'GET https://example.com/',
             headers: {
-              // Would probably be better if this ended up as three separate headers, but that'll require fixes in teepee:
               Foo: 'bar, quux, baz'
             }
           },
