@@ -306,4 +306,100 @@ describe('main', function() {
       );
     });
   });
+
+  describe('with --header|-H', function() {
+    it('should accept one custom header', async function() {
+      httpception([
+        {
+          request: {
+            url: 'GET https://example.com/',
+            headers: {
+              Foo: 123
+            }
+          },
+          response: {
+            headers: {
+              'Content-Type': 'text/html; charset=utf-8'
+            },
+            body: '<!DOCTYPE html><html><head></head><body></body></html>'
+          }
+        }
+      ]);
+
+      await main(
+        ['-s', '-H', 'foo:123', '-o', outputDir, 'https://example.com/'],
+        console
+      );
+    });
+
+    it('should accept two different custom headers', async function() {
+      httpception([
+        {
+          request: {
+            url: 'GET https://example.com/',
+            headers: {
+              Foo: 123,
+              bar: 'quux'
+            }
+          },
+          response: {
+            headers: {
+              'Content-Type': 'text/html; charset=utf-8'
+            },
+            body: '<!DOCTYPE html><html><head></head><body></body></html>'
+          }
+        }
+      ]);
+
+      await main(
+        [
+          '-s',
+          '-H',
+          'foo:123',
+          '-H',
+          'bar: quux',
+          '-o',
+          outputDir,
+          'https://example.com/'
+        ],
+        console
+      );
+    });
+
+    it('should accept three values of the same header', async function() {
+      httpception([
+        {
+          request: {
+            url: 'GET https://example.com/',
+            headers: {
+              // Would probably be better if this ended up as three separate headers, but that'll require fixes in teepee:
+              Foo: 'bar, quux, baz'
+            }
+          },
+          response: {
+            headers: {
+              'Content-Type': 'text/html; charset=utf-8'
+            },
+            body: '<!DOCTYPE html><html><head></head><body></body></html>'
+          }
+        }
+      ]);
+
+      await main(
+        [
+          '-s',
+          '-H',
+          'Foo: bar',
+          '-H',
+          'Foo: quux',
+          '-H',
+          'Foo: baz',
+          '-o',
+          outputDir,
+          'https://example.com/'
+        ],
+        console
+      );
+    });
+  });
 });
