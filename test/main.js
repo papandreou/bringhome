@@ -41,13 +41,7 @@ describe('main', function() {
       }
     ]);
 
-    await main(
-      {
-        inputUrls: ['https://example.com/'],
-        output: outputDir
-      },
-      console
-    );
+    await main(['-s', '-o', outputDir, 'https://example.com/'], console);
 
     expect(await readdirAsync(outputDir), 'to equal', ['index.html']);
 
@@ -90,13 +84,7 @@ describe('main', function() {
       }
     ]);
 
-    await main(
-      {
-        inputUrls: ['https://example.com/'],
-        output: outputDir
-      },
-      console
-    );
+    await main(['-s', '-o', outputDir, 'https://example.com/'], console);
 
     expect(
       await readdirAsync(pathModule.resolve(outputDir, 'scripts')),
@@ -154,13 +142,7 @@ describe('main', function() {
       }
     ]);
 
-    await main(
-      {
-        inputUrls: ['https://example.com/'],
-        output: outputDir
-      },
-      console
-    );
+    await main(['-s', '-o', outputDir, 'https://example.com/'], console);
 
     const html = await readFileAsync(
       pathModule.resolve(outputDir, 'index.html'),
@@ -206,13 +188,7 @@ describe('main', function() {
       }
     ]);
 
-    await main(
-      {
-        inputUrls: ['https://example.com/'],
-        output: outputDir
-      },
-      console
-    );
+    await main(['-s', '-o', outputDir, 'https://example.com/'], console);
 
     expect(
       await readdirAsync(
@@ -265,11 +241,13 @@ describe('main', function() {
       ]);
 
       await main(
-        {
-          selfContained: true,
-          inputUrls: ['https://example.com/'],
-          output: `${outputDir}/single.html`
-        },
+        [
+          '-s',
+          '--self-contained',
+          '-o',
+          `${outputDir}/single.html`,
+          'https://example.com/'
+        ],
         console
       );
 
@@ -310,11 +288,7 @@ describe('main', function() {
       ]);
 
       await main(
-        {
-          omitScripts: true,
-          inputUrls: ['https://example.com/'],
-          output: outputDir
-        },
+        ['-s', '--omit-scripts', '-o', outputDir, 'https://example.com/'],
         console
       );
 
