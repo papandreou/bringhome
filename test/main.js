@@ -70,7 +70,9 @@ describe('main', function() {
             <!DOCTYPE html>
             <html>
             <head></head>
-            <body><script src="/scripts/script.js"></body>
+            <body>
+              <script src="/scripts/script.js"></script>
+            </body>
             </html>
           `
         }
@@ -103,12 +105,73 @@ describe('main', function() {
     );
 
     expect(
+      await readFileAsync(pathModule.resolve(outputDir, 'index.html'), 'utf-8'),
+      'to contain',
+      '<script src="scripts/script.js">'
+    );
+
+    expect(
       await readFileAsync(
         pathModule.resolve(outputDir, 'scripts', 'script.js'),
         'utf-8'
       ),
       'to contain',
       `alert('Hello, world!');`
+    );
+  });
+
+  it('should convert root-relative and absolute urls to relative ones', async function() {
+    httpception([
+      {
+        request: 'GET https://example.com/',
+        response: {
+          headers: {
+            'Content-Type': 'text/html; charset=utf-8'
+          },
+          body: `
+            <!DOCTYPE html>
+            <html>
+            <head></head>
+            <body>
+              <script src="/scripts/script.js"></script>
+              <script src="https://example.com/scripts/script.js"></script>
+              <script src="//example.com/scripts/script.js"></script>
+            </body>
+            </html>
+          `
+        }
+      },
+      {
+        request: 'GET https://example.com/scripts/script.js',
+        response: {
+          headers: {
+            'Content-Type': 'application/javascript'
+          },
+          body: `
+            alert('Hello, world!');
+          `
+        }
+      }
+    ]);
+
+    await main(
+      {
+        inputUrls: ['https://example.com/'],
+        output: outputDir
+      },
+      console
+    );
+
+    const html = await readFileAsync(
+      pathModule.resolve(outputDir, 'index.html'),
+      'utf-8'
+    );
+
+    expect(html, 'not to contain', 'file:');
+    expect(
+      html.match(/<script src="scripts\/script\.js">/g),
+      'to have length',
+      3
     );
   });
 
@@ -124,7 +187,8 @@ describe('main', function() {
             <!DOCTYPE html>
             <html>
             <head></head>
-            <body><script src="https://thirdparty.com/scripts/script.js"></body>
+            <body><script src="https://thirdparty.com/scripts/script.js"></script>
+            </body>
             </html>
           `
         }
@@ -181,7 +245,8 @@ describe('main', function() {
               <!DOCTYPE html>
               <html>
               <head></head>
-              <body><script src="scripts/script.js"></body>
+              <body><script src="scripts/script.js"></script>
+              </body>
               </html>
             `
           }
@@ -236,7 +301,8 @@ describe('main', function() {
               <!DOCTYPE html>
               <html>
               <head></head>
-              <body><script src="scripts/script.js"></body>
+              <body><script src="scripts/script.js"></script>
+              </body>
               </html>
             `
           }
