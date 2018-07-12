@@ -208,6 +208,66 @@ describe('main', function() {
     );
   });
 
+  describe('with http redirects', function() {
+    it('should rewrite the incoming relations to point at the target asset', async function() {
+      httpception([
+        {
+          request: 'GET https://example.com/',
+          response: {
+            headers: {
+              'Content-Type': 'text/html; charset=utf-8'
+            },
+            body: `
+              <!DOCTYPE html>
+              <html>
+              <head></head>
+              <body><script src="scripts/script.js"></script>
+              </body>
+              </html>
+            `
+          }
+        },
+        {
+          request: 'GET https://example.com/scripts/script.js',
+          response: {
+            statusCode: 301,
+            headers: {
+              Location: 'https://example.com/some/other/script.js'
+            }
+          }
+        },
+        {
+          request: 'GET https://example.com/some/other/script.js',
+          response: {
+            headers: {
+              'Content-Type': 'application/javascript'
+            },
+            body: "alert('Hello, world!');"
+          }
+        }
+      ]);
+
+      await main(['-s', '-o', outputDir, 'https://example.com/'], console);
+
+      expect(
+        await readdirAsync(pathModule.resolve(outputDir, 'some', 'other')),
+        'to equal',
+        ['script.js']
+      );
+
+      expect(await readdirAsync(outputDir), 'to equal', ['index.html', 'some']);
+
+      expect(
+        await readFileAsync(
+          pathModule.resolve(outputDir, 'some', 'other', 'script.js'),
+          'utf-8'
+        ),
+        'to contain',
+        `alert('Hello, world!');`
+      );
+    });
+  });
+
   describe('in selfContained:true mode', function() {
     it('should inline all referenced assets and output a single file', async function() {
       httpception([
