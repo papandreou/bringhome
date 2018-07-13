@@ -208,6 +208,63 @@ describe('main', function() {
     );
   });
 
+  it('should handle cyclic references', async function() {
+    httpception([
+      {
+        request: 'GET https://example.com/',
+        response: {
+          headers: {
+            'Content-Type': 'text/html; charset=utf-8'
+          },
+          body: `
+            <!DOCTYPE html>
+            <html>
+            <head></head>
+            <body><script src="script.js"></script>
+            </body>
+            </html>
+          `
+        }
+      },
+      {
+        request: 'GET https://example.com/script.js',
+        response: {
+          headers: {
+            'Content-Type': 'application/javascript'
+          },
+          body:
+            "alert('Hello, look over there: ' + 'anotherscript.js'.toString('url'));"
+        }
+      },
+      {
+        request: 'GET https://example.com/anotherscript.js',
+        response: {
+          headers: {
+            'Content-Type': 'application/javascript'
+          },
+          body: "alert('And here: ' + 'script.js'.toString('url'));"
+        }
+      }
+    ]);
+
+    await main(['-s', '-o', outputDir, 'https://example.com/'], console);
+
+    expect(
+      await readFileAsync(pathModule.resolve(outputDir, 'script.js'), 'utf-8'),
+      'to contain',
+      "alert('Hello, look over there: ' + 'anotherscript.js'.toString('url'));"
+    );
+
+    expect(
+      await readFileAsync(
+        pathModule.resolve(outputDir, 'anotherscript.js'),
+        'utf-8'
+      ),
+      'to contain',
+      "alert('And here: ' + 'script.js'.toString('url'));"
+    );
+  });
+
   describe('with http redirects', function() {
     it('should rewrite the incoming relations to point at the target asset', async function() {
       httpception([
