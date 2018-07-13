@@ -208,6 +208,120 @@ describe('main', function() {
     );
   });
 
+  it('should not break when an asset collides with the name of a directory', async function() {
+    httpception([
+      {
+        request: 'GET https://example.com/',
+        response: {
+          headers: {
+            'Content-Type': 'text/html; charset=utf-8'
+          },
+          body: `
+            <!DOCTYPE html>
+            <html>
+            <head></head>
+            <body>
+              <script src="script"></script>
+              <script src="script/bar/quux"></script>
+              <script src="script/bar"></script>
+              <script src="script/bar/quux/baz.js"></script>
+              <script src="script/foo.js"></script>
+            </body>
+            </html>
+          `
+        }
+      },
+      {
+        request: 'GET https://example.com/script',
+        response: {
+          headers: {
+            'Content-Type': 'application/javascript'
+          },
+          body: "alert('script');"
+        }
+      },
+      {
+        request: 'GET https://example.com/script/bar/quux',
+        response: {
+          headers: {
+            'Content-Type': 'application/javascript'
+          },
+          body: "alert('bar/quux');"
+        }
+      },
+      {
+        request: 'GET https://example.com/script/bar',
+        response: {
+          headers: {
+            'Content-Type': 'application/javascript'
+          },
+          body: "alert('bar');"
+        }
+      },
+      {
+        request: 'GET https://example.com/script/bar/quux/baz.js',
+        response: {
+          headers: {
+            'Content-Type': 'application/javascript'
+          },
+          body: "alert('bar/quux/baz');"
+        }
+      },
+      {
+        request: 'GET https://example.com/script/foo.js',
+        response: {
+          headers: {
+            'Content-Type': 'application/javascript'
+          },
+          body: "alert('foo');"
+        }
+      }
+    ]);
+
+    await main(['-s', '-o', outputDir, 'https://example.com/'], console);
+
+    expect(await readdirAsync(outputDir), 'to equal', [
+      'index.html',
+      'script',
+      'script-1'
+    ]);
+
+    expect(
+      await readdirAsync(pathModule.resolve(outputDir, 'script')),
+      'to equal',
+      ['bar', 'bar-1', 'foo.js']
+    );
+
+    expect(
+      await readdirAsync(pathModule.resolve(outputDir, 'script', 'bar')),
+      'to equal',
+      ['quux', 'quux-1']
+    );
+
+    expect(
+      await readdirAsync(
+        pathModule.resolve(outputDir, 'script', 'bar', 'quux')
+      ),
+      'to equal',
+      ['baz.js']
+    );
+
+    expect(
+      await readFileAsync(
+        pathModule.resolve(outputDir, 'script', 'foo.js'),
+        'utf-8'
+      ),
+      'to contain',
+      "alert('foo');"
+    );
+
+    expect(
+      await readFileAsync(pathModule.resolve(outputDir, 'script-1'), 'utf-8'),
+      'to contain',
+      "alert('script');"
+    );
+  });
+
   it('should handle cyclic references', async function() {
     httpception([
       {
