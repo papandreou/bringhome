@@ -283,19 +283,19 @@ describe('main', function() {
     expect(await readdirAsync(outputDir), 'to equal', [
       'index.html',
       'script',
-      'script-1'
+      'script-1.js'
     ]);
 
     expect(
       await readdirAsync(pathModule.resolve(outputDir, 'script')),
       'to equal',
-      ['bar', 'bar-1', 'foo.js']
+      ['bar', 'bar-1.js', 'foo.js']
     );
 
     expect(
       await readdirAsync(pathModule.resolve(outputDir, 'script', 'bar')),
       'to equal',
-      ['quux', 'quux-1']
+      ['quux', 'quux-1.js']
     );
 
     expect(
@@ -316,7 +316,10 @@ describe('main', function() {
     );
 
     expect(
-      await readFileAsync(pathModule.resolve(outputDir, 'script-1'), 'utf-8'),
+      await readFileAsync(
+        pathModule.resolve(outputDir, 'script-1.js'),
+        'utf-8'
+      ),
       'to contain',
       "alert('script');"
     );
