@@ -34,9 +34,8 @@ describe('main', function() {
           headers: {
             'Content-Type': 'text/html; charset=utf-8'
           },
-          body: `
-            <!DOCTYPE html><html><head></head><body><p>Hello, world!</p></body></html>
-          `
+          body:
+            '<!DOCTYPE html><html><head></head><body><p>Hello, world!</p></body></html>'
         }
       }
     ]);
