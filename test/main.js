@@ -223,7 +223,7 @@ describe('main', function() {
     );
   });
 
-  it('should not break when an asset collides with the name of a directory', async function() {
+  it('should ensure that the downloaded files have an extension (to make them more likely to be served with the correct C-T)', async function() {
     httpception([
       {
         request: 'GET https://example.com/',
@@ -237,10 +237,6 @@ describe('main', function() {
             <head></head>
             <body>
               <script src="script"></script>
-              <script src="script/bar/quux"></script>
-              <script src="script/bar"></script>
-              <script src="script/bar/quux/baz.js"></script>
-              <script src="script/foo.js"></script>
             </body>
             </html>
           `
@@ -254,9 +250,51 @@ describe('main', function() {
           },
           body: "alert('script');"
         }
+      }
+    ]);
+
+    await main(['-s', '-o', outputDir, 'https://example.com/'], console);
+
+    expect(await readdirAsync(outputDir), 'to equal', [
+      'index.html',
+      'script.js'
+    ]);
+  });
+
+  it('should not break when an asset collides with the name of a directory', async function() {
+    httpception([
+      {
+        request: 'GET https://example.com/',
+        response: {
+          headers: {
+            'Content-Type': 'text/html; charset=utf-8'
+          },
+          body: `
+            <!DOCTYPE html>
+            <html>
+            <head></head>
+            <body>
+              <script src="script.js"></script>
+              <script src="script.js/bar.js/quux.js"></script>
+              <script src="script.js/bar.js"></script>
+              <script src="script.js/bar.js/quux.js/baz.js"></script>
+              <script src="script.js/foo.js"></script>
+            </body>
+            </html>
+          `
+        }
       },
       {
-        request: 'GET https://example.com/script/bar/quux',
+        request: 'GET https://example.com/script.js',
+        response: {
+          headers: {
+            'Content-Type': 'application/javascript'
+          },
+          body: "alert('script');"
+        }
+      },
+      {
+        request: 'GET https://example.com/script.js/bar.js/quux.js',
         response: {
           headers: {
             'Content-Type': 'application/javascript'
@@ -265,7 +303,7 @@ describe('main', function() {
         }
       },
       {
-        request: 'GET https://example.com/script/bar',
+        request: 'GET https://example.com/script.js/bar.js',
         response: {
           headers: {
             'Content-Type': 'application/javascript'
@@ -274,7 +312,7 @@ describe('main', function() {
         }
       },
       {
-        request: 'GET https://example.com/script/bar/quux/baz.js',
+        request: 'GET https://example.com/script.js/bar.js/quux.js/baz.js',
         response: {
           headers: {
             'Content-Type': 'application/javascript'
@@ -283,7 +321,7 @@ describe('main', function() {
         }
       },
       {
-        request: 'GET https://example.com/script/foo.js',
+        request: 'GET https://example.com/script.js/foo.js',
         response: {
           headers: {
             'Content-Type': 'application/javascript'
@@ -297,25 +335,25 @@ describe('main', function() {
 
     expect(await readdirAsync(outputDir), 'to equal', [
       'index.html',
-      'script',
-      'script-1.js'
+      'script-1.js',
+      'script.js'
     ]);
 
     expect(
-      await readdirAsync(pathModule.resolve(outputDir, 'script')),
+      await readdirAsync(pathModule.resolve(outputDir, 'script.js')),
       'to equal',
-      ['bar', 'bar-1.js', 'foo.js']
+      ['bar-1.js', 'bar.js', 'foo.js']
     );
 
     expect(
-      await readdirAsync(pathModule.resolve(outputDir, 'script', 'bar')),
+      await readdirAsync(pathModule.resolve(outputDir, 'script.js', 'bar.js')),
       'to equal',
-      ['quux', 'quux-1.js']
+      ['quux-1.js', 'quux.js']
     );
 
     expect(
       await readdirAsync(
-        pathModule.resolve(outputDir, 'script', 'bar', 'quux')
+        pathModule.resolve(outputDir, 'script.js', 'bar.js', 'quux.js')
       ),
       'to equal',
       ['baz.js']
@@ -323,7 +361,7 @@ describe('main', function() {
 
     expect(
       await readFileAsync(
-        pathModule.resolve(outputDir, 'script', 'foo.js'),
+        pathModule.resolve(outputDir, 'script.js', 'foo.js'),
         'utf-8'
       ),
       'to contain',
