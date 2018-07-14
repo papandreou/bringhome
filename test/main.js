@@ -398,6 +398,70 @@ describe('main', function() {
   });
 
   describe('with http redirects', function() {
+    it('should handle a redirect of the entry point', async function() {
+      httpception([
+        {
+          request: 'GET http://example.com/',
+          response: {
+            statusCode: 301,
+            headers: {
+              Location: 'https://somewhereelse.com/'
+            }
+          }
+        },
+        {
+          request: 'GET https://somewhereelse.com/',
+          response: {
+            headers: {
+              'Content-Type': 'text/html; charset=utf-8'
+            },
+            body: `
+              <!DOCTYPE html>
+              <html>
+              <head></head>
+              <body><script src="script.js"></script>
+              </body>
+              </html>
+            `
+          }
+        },
+        {
+          request: 'GET https://somewhereelse.com/script.js',
+          response: {
+            headers: {
+              'Content-Type': 'application/javascript'
+            },
+            body: "alert('Hello, world!');"
+          }
+        }
+      ]);
+
+      await main(['-s', '-o', outputDir, 'http://example.com/'], console);
+
+      expect(await readdirAsync(outputDir), 'to equal', [
+        'index.html',
+        'script.js'
+      ]);
+
+      expect(
+        await readFileAsync(
+          pathModule.resolve(outputDir, 'index.html'),
+          'utf-8'
+        ),
+        'to contain',
+        `<script src="script.js">`
+      );
+
+      expect(
+        await readFileAsync(
+          pathModule.resolve(outputDir, 'script.js'),
+          'utf-8'
+        ),
+        'to contain',
+        `alert('Hello, world!');`
+      );
+    });
+
     it('should rewrite the incoming relations to point at the target asset', async function() {
       httpception([
         {
