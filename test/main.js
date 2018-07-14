@@ -65,14 +65,6 @@ describe('main', function() {
     ]);
 
     await main(['-s', '-o', outputDir, 'example.com'], console);
-
-    expect(await readdirAsync(outputDir), 'to equal', ['index.html']);
-
-    expect(
-      await readFileAsync(pathModule.resolve(outputDir, 'index.html'), 'utf-8'),
-      'to contain',
-      'Hello, world!'
-    );
   });
 
   it('should download first party referenced assets and mirror the directory structure locally', async function() {
