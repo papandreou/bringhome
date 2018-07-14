@@ -52,6 +52,30 @@ describe('main', function() {
     );
   });
 
+  it('should assume http:// when no protocol:// is passed (like curl)', async function() {
+    httpception([
+      {
+        request: 'GET http://example.com/',
+        response: {
+          headers: {
+            'Content-Type': 'text/html; charset=utf-8'
+          },
+          body: '<!DOCTYPE html><html><head></head><body></body></html>'
+        }
+      }
+    ]);
+
+    await main(['-s', '-o', outputDir, 'example.com'], console);
+
+    expect(await readdirAsync(outputDir), 'to equal', ['index.html']);
+
+    expect(
+      await readFileAsync(pathModule.resolve(outputDir, 'index.html'), 'utf-8'),
+      'to contain',
+      'Hello, world!'
+    );
+  });
+
   it('should download first party referenced assets and mirror the directory structure locally', async function() {
     httpception([
       {
