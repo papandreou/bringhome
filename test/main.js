@@ -650,4 +650,50 @@ describe('main', function() {
       );
     });
   });
+
+  describe('with --pretty', function() {
+    it('should pretty-print assets', async function() {
+      httpception([
+        {
+          request: 'GET https://example.com/',
+          response: {
+            headers: {
+              'Content-Type': 'text/html; charset=utf-8'
+            },
+            body: `
+              <!DOCTYPE html>
+              <html>
+              <head></head>
+              <body><script src="script.js"></script>
+              </body>
+              </html>
+            `
+          }
+        },
+        {
+          request: 'GET https://example.com/script.js',
+          response: {
+            headers: {
+              'Content-Type': 'application/javascript'
+            },
+            body: `function greeter(){alert('Hello, world!');}greeter()`
+          }
+        }
+      ]);
+
+      await main(
+        ['-s', '--pretty', '-o', outputDir, 'https://example.com/'],
+        console
+      );
+
+      expect(
+        await readFileAsync(
+          pathModule.resolve(outputDir, 'script.js'),
+          'utf-8'
+        ),
+        'to equal',
+        "function greeter() {\n    alert('Hello, world!');\n}\ngreeter();"
+      );
+    });
+  });
 });
