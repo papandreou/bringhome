@@ -656,6 +656,92 @@ describe('main', function() {
         `<script`
       );
     });
+
+    it('should unwrap <noscript> ... </noscript> blocks', async function() {
+      httpception([
+        {
+          request: 'GET https://example.com/',
+          response: {
+            headers: {
+              'Content-Type': 'text/html; charset=utf-8'
+            },
+            body: `
+              <!DOCTYPE html>
+              <html>
+              <head></head>
+              <body><noscript>foo<span>bar</span>quux</noscript></body>
+              </html>
+            `
+          }
+        }
+      ]);
+
+      await main(
+        ['-s', '--omit-scripts', '-o', outputDir, 'https://example.com/'],
+        console
+      );
+
+      expect(await readdirAsync(pathModule.resolve(outputDir)), 'to equal', [
+        'index.html'
+      ]);
+
+      expect(
+        await readFileAsync(
+          pathModule.resolve(outputDir, 'index.html'),
+          'utf-8'
+        ),
+        'to contain',
+        '<body>foo<span>bar</span>quux'
+      ).and('not to contain', 'noscript');
+    });
+
+    it('should rewrite relations found in the <noscript> blocks', async function() {
+      httpception([
+        {
+          request: 'GET https://example.com/',
+          response: {
+            headers: {
+              'Content-Type': 'text/html; charset=utf-8'
+            },
+            body: `
+              <!DOCTYPE html>
+              <html>
+              <head></head>
+              <body><noscript><link rel="stylesheet" href="https://3rdparty.com/styles.css"></noscript></body>
+              </html>
+            `
+          }
+        },
+        {
+          request: 'GET https://3rdparty.com/styles.css',
+          response: {
+            headers: {
+              'Content-Type': 'text/css'
+            },
+            body: 'body { color: maroon; }'
+          }
+        }
+      ]);
+
+      await main(
+        ['-s', '--omit-scripts', '-o', outputDir, 'https://example.com/'],
+        console
+      );
+
+      expect(await readdirAsync(pathModule.resolve(outputDir)), 'to equal', [
+        '3rdparty.com',
+        'index.html'
+      ]);
+
+      expect(
+        await readFileAsync(
+          pathModule.resolve(outputDir, 'index.html'),
+          'utf-8'
+        ),
+        'to contain',
+        '<link rel="stylesheet" href="3rdparty.com/styles.css">'
+      ).and('not to contain', 'noscript');
+    });
   });
 
   describe('with --header|-H', function() {
