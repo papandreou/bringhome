@@ -1,6 +1,6 @@
 {
   "name": "bringhome",
-  "version": "1.3.2",
+  "version": "1.4.0",
   "description": "Download a web page to a local directory",
   "engines": {
     "node": ">=8.0.0"
