@@ -15,11 +15,11 @@ const pathModule = require('path');
 
 describe('main', function() {
   let outputDir;
-  let console;
+  let mockConsole;
   beforeEach(async function() {
     outputDir = getTemporaryFilePath();
     await mkdirAsync(outputDir);
-    console = { log: sinon.spy() };
+    mockConsole = { log: sinon.spy() };
   });
 
   afterEach(async function() {
@@ -40,7 +40,7 @@ describe('main', function() {
       }
     ]);
 
-    await main(['-s', '-o', outputDir, 'https://example.com/'], console);
+    await main(['-s', '-o', outputDir, 'https://example.com/'], mockConsole);
 
     expect(await readdirAsync(outputDir), 'to equal', ['index.html']);
 
@@ -64,7 +64,7 @@ describe('main', function() {
       }
     ]);
 
-    await main(['-s', '-o', outputDir, 'example.com'], console);
+    await main(['-s', '-o', outputDir, 'example.com'], mockConsole);
   });
 
   it('should download first party referenced assets and mirror the directory structure locally', async function() {
@@ -99,7 +99,7 @@ describe('main', function() {
       }
     ]);
 
-    await main(['-s', '-o', outputDir, 'https://example.com/'], console);
+    await main(['-s', '-o', outputDir, 'https://example.com/'], mockConsole);
 
     expect(
       await readdirAsync(pathModule.resolve(outputDir, 'scripts')),
@@ -157,7 +157,7 @@ describe('main', function() {
       }
     ]);
 
-    await main(['-s', '-o', outputDir, 'https://example.com/'], console);
+    await main(['-s', '-o', outputDir, 'https://example.com/'], mockConsole);
 
     const html = await readFileAsync(
       pathModule.resolve(outputDir, 'index.html'),
@@ -203,7 +203,7 @@ describe('main', function() {
       }
     ]);
 
-    await main(['-s', '-o', outputDir, 'https://example.com/'], console);
+    await main(['-s', '-o', outputDir, 'https://example.com/'], mockConsole);
 
     expect(
       await readdirAsync(
@@ -253,7 +253,7 @@ describe('main', function() {
       }
     ]);
 
-    await main(['-s', '-o', outputDir, 'https://example.com/'], console);
+    await main(['-s', '-o', outputDir, 'https://example.com/'], mockConsole);
 
     expect(await readdirAsync(outputDir), 'to equal', [
       'index.html',
@@ -331,7 +331,7 @@ describe('main', function() {
       }
     ]);
 
-    await main(['-s', '-o', outputDir, 'https://example.com/'], console);
+    await main(['-s', '-o', outputDir, 'https://example.com/'], mockConsole);
 
     expect(await readdirAsync(outputDir), 'to equal', [
       'index.html',
@@ -417,7 +417,7 @@ describe('main', function() {
       }
     ]);
 
-    await main(['-s', '-o', outputDir, 'https://example.com/'], console);
+    await main(['-s', '-o', outputDir, 'https://example.com/'], mockConsole);
 
     expect(
       await readFileAsync(pathModule.resolve(outputDir, 'script.js'), 'utf-8'),
@@ -474,7 +474,7 @@ describe('main', function() {
         }
       ]);
 
-      await main(['-s', '-o', outputDir, 'http://example.com/'], console);
+      await main(['-s', '-o', outputDir, 'http://example.com/'], mockConsole);
 
       expect(await readdirAsync(outputDir), 'to equal', [
         'index.html',
@@ -538,7 +538,7 @@ describe('main', function() {
         }
       ]);
 
-      await main(['-s', '-o', outputDir, 'https://example.com/'], console);
+      await main(['-s', '-o', outputDir, 'https://example.com/'], mockConsole);
 
       expect(
         await readdirAsync(pathModule.resolve(outputDir, 'some', 'other')),
@@ -599,7 +599,7 @@ describe('main', function() {
           `${outputDir}/single.html`,
           'https://example.com/'
         ],
-        console
+        mockConsole
       );
 
       expect(await readdirAsync(pathModule.resolve(outputDir)), 'to equal', [
@@ -640,7 +640,7 @@ describe('main', function() {
 
       await main(
         ['-s', '--omit-scripts', '-o', outputDir, 'https://example.com/'],
-        console
+        mockConsole
       );
 
       expect(await readdirAsync(pathModule.resolve(outputDir)), 'to equal', [
@@ -678,7 +678,7 @@ describe('main', function() {
 
       await main(
         ['-s', '--omit-scripts', '-o', outputDir, 'https://example.com/'],
-        console
+        mockConsole
       );
 
       expect(await readdirAsync(pathModule.resolve(outputDir)), 'to equal', [
@@ -725,7 +725,7 @@ describe('main', function() {
 
       await main(
         ['-s', '--omit-scripts', '-o', outputDir, 'https://example.com/'],
-        console
+        mockConsole
       );
 
       expect(await readdirAsync(pathModule.resolve(outputDir)), 'to equal', [
@@ -765,7 +765,7 @@ describe('main', function() {
 
       await main(
         ['-s', '-H', 'foo:123', '-o', outputDir, 'https://example.com/'],
-        console
+        mockConsole
       );
     });
 
@@ -799,7 +799,7 @@ describe('main', function() {
           outputDir,
           'https://example.com/'
         ],
-        console
+        mockConsole
       );
     });
 
@@ -834,7 +834,7 @@ describe('main', function() {
           outputDir,
           'https://example.com/'
         ],
-        console
+        mockConsole
       );
     });
   });
@@ -871,7 +871,7 @@ describe('main', function() {
 
       await main(
         ['-s', '--pretty', '-o', outputDir, 'https://example.com/'],
-        console
+        mockConsole
       );
 
       expect(
@@ -918,7 +918,7 @@ describe('main', function() {
         }
       ]);
 
-      await main(['-s', '-o', outputDir, 'https://example.com/'], console);
+      await main(['-s', '-o', outputDir, 'https://example.com/'], mockConsole);
 
       expect(
         await readFileAsync(
@@ -962,7 +962,7 @@ describe('main', function() {
         }
       ]);
 
-      await main(['-s', '-o', outputDir, 'https://example.com/'], console);
+      await main(['-s', '-o', outputDir, 'https://example.com/'], mockConsole);
 
       expect(
         await readFileAsync(
