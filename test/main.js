@@ -884,4 +884,94 @@ describe('main', function() {
       );
     });
   });
+
+  describe('with a JavaScriptStaticUrl relation', function() {
+    it('should keep a JavaScriptStaticUrl as a root-relative url (not convert it to a relative one like the other relation types)', async function() {
+      httpception([
+        {
+          request: 'GET https://example.com/',
+          response: {
+            headers: {
+              'Content-Type': 'text/html; charset=utf-8'
+            },
+            body: `
+              <!DOCTYPE html>
+              <html>
+              <head></head>
+              <body>
+                <script>
+                  alert('/foo.txt'.toString('url'));
+                </script>
+              </body>
+              </html>
+            `
+          }
+        },
+        {
+          request: 'GET https://example.com/foo.txt',
+          response: {
+            headers: {
+              'Content-Type': 'text/css'
+            },
+            body: 'Whoa!'
+          }
+        }
+      ]);
+
+      await main(['-s', '-o', outputDir, 'https://example.com/'], console);
+
+      expect(
+        await readFileAsync(
+          pathModule.resolve(outputDir, 'index.html'),
+          'utf-8'
+        ),
+        'to contain',
+        `'/foo.txt'.toString('url')`
+      );
+    });
+
+    it('should convert a JavaScriptStaticUrl on a foreign domain to a root-relative url (not a relative one like the other relation types)', async function() {
+      httpception([
+        {
+          request: 'GET https://example.com/',
+          response: {
+            headers: {
+              'Content-Type': 'text/html; charset=utf-8'
+            },
+            body: `
+              <!DOCTYPE html>
+              <html>
+              <head></head>
+              <body>
+                <script>
+                  alert('https://somewhereelse.com/foo.txt'.toString('url'));
+                </script>
+              </body>
+              </html>
+            `
+          }
+        },
+        {
+          request: 'GET https://somewhereelse.com/foo.txt',
+          response: {
+            headers: {
+              'Content-Type': 'text/css'
+            },
+            body: 'Whoa!'
+          }
+        }
+      ]);
+
+      await main(['-s', '-o', outputDir, 'https://example.com/'], console);
+
+      expect(
+        await readFileAsync(
+          pathModule.resolve(outputDir, 'index.html'),
+          'utf-8'
+        ),
+        'to contain',
+        `'/somewhereelse.com/foo.txt'.toString('url')`
+      );
+    });
+  });
 });
