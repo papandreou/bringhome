@@ -3,10 +3,10 @@ services:
 language: node_js
 cache:
   directories:
-  - node_modules
+    - node_modules
 node_js:
-  - "8"
-  - "9"
+  - '8.11'
+  - '9'
 
-script: "npm install && npm run ci"
-after_success: "<coverage/lcov.info ./node_modules/coveralls/bin/coveralls.js"
+script: 'npm install && npm run ci'
+after_success: '<coverage/lcov.info ./node_modules/coveralls/bin/coveralls.js'
