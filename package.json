@@ -49,7 +49,7 @@
     "prettier": "~1.15.2",
     "rimraf": "^2.6.2",
     "sinon": "^7.0.0",
-    "unexpected": "^10.37.2",
+    "unexpected": "^11.0.0",
     "unexpected-sinon": "^10.10.1"
   },
   "nyc": {
