@@ -7,7 +7,7 @@
   },
   "scripts": {
     "lint": "eslint .",
-    "test": "npm run lint && mocha",
+    "test": "mocha",
     "ci": "npm run lint && npm run coverage",
     "coverage": "nyc --reporter=lcov --reporter=text -- mocha --reporter dot && echo google-chrome coverage/lcov-report/index.html"
   },
