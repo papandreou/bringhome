@@ -11,5 +11,5 @@ matrix:
       node_js: 12
       script: npm run lint
 
-script: npm run ci:test
+script: npm run test:ci
 after_success: '<coverage/lcov.info ./node_modules/coveralls/bin/coveralls.js'
