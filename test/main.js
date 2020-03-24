@@ -7,37 +7,35 @@ const readFileAsync = promisify(fs.readFile);
 const mkdirAsync = promisify(fs.mkdir);
 const readdirAsync = promisify(fs.readdir);
 const getTemporaryFilePath = require('gettemporaryfilepath');
-const expect = require('unexpected')
-  .clone()
-  .use(require('unexpected-sinon'));
+const expect = require('unexpected').clone().use(require('unexpected-sinon'));
 const sinon = require('sinon');
 const pathModule = require('path');
 
-describe('main', function() {
+describe('main', function () {
   let outputDir;
   let mockConsole;
-  beforeEach(async function() {
+  beforeEach(async function () {
     outputDir = getTemporaryFilePath();
     await mkdirAsync(outputDir);
     mockConsole = { log: sinon.spy() };
   });
 
-  afterEach(async function() {
+  afterEach(async function () {
     await rimrafAsync(outputDir);
   });
 
-  it('should download a web page and save it in a local directory', async function() {
+  it('should download a web page and save it in a local directory', async function () {
     httpception([
       {
         request: 'GET https://example.com/',
         response: {
           headers: {
-            'Content-Type': 'text/html; charset=utf-8'
+            'Content-Type': 'text/html; charset=utf-8',
           },
           body:
-            '<!DOCTYPE html><html><head></head><body><p>Hello, world!</p></body></html>'
-        }
-      }
+            '<!DOCTYPE html><html><head></head><body><p>Hello, world!</p></body></html>',
+        },
+      },
     ]);
 
     await main(['-s', '-o', outputDir, 'https://example.com/'], mockConsole);
@@ -51,29 +49,29 @@ describe('main', function() {
     );
   });
 
-  it('should assume http:// when no protocol:// is passed (like curl)', async function() {
+  it('should assume http:// when no protocol:// is passed (like curl)', async function () {
     httpception([
       {
         request: 'GET http://example.com/',
         response: {
           headers: {
-            'Content-Type': 'text/html; charset=utf-8'
+            'Content-Type': 'text/html; charset=utf-8',
           },
-          body: '<!DOCTYPE html><html><head></head><body></body></html>'
-        }
-      }
+          body: '<!DOCTYPE html><html><head></head><body></body></html>',
+        },
+      },
     ]);
 
     await main(['-s', '-o', outputDir, 'example.com'], mockConsole);
   });
 
-  it('should download first party referenced assets and mirror the directory structure locally', async function() {
+  it('should download first party referenced assets and mirror the directory structure locally', async function () {
     httpception([
       {
         request: 'GET https://example.com/',
         response: {
           headers: {
-            'Content-Type': 'text/html; charset=utf-8'
+            'Content-Type': 'text/html; charset=utf-8',
           },
           body: `
             <!DOCTYPE html>
@@ -83,20 +81,20 @@ describe('main', function() {
               <script src="/scripts/script.js"></script>
             </body>
             </html>
-          `
-        }
+          `,
+        },
       },
       {
         request: 'GET https://example.com/scripts/script.js',
         response: {
           headers: {
-            'Content-Type': 'application/javascript'
+            'Content-Type': 'application/javascript',
           },
           body: `
             alert('Hello, world!');
-          `
-        }
-      }
+          `,
+        },
+      },
     ]);
 
     await main(['-s', '-o', outputDir, 'https://example.com/'], mockConsole);
@@ -123,13 +121,13 @@ describe('main', function() {
     );
   });
 
-  it('should convert root-relative and absolute urls to relative ones', async function() {
+  it('should convert root-relative and absolute urls to relative ones', async function () {
     httpception([
       {
         request: 'GET https://example.com/',
         response: {
           headers: {
-            'Content-Type': 'text/html; charset=utf-8'
+            'Content-Type': 'text/html; charset=utf-8',
           },
           body: `
             <!DOCTYPE html>
@@ -141,20 +139,20 @@ describe('main', function() {
               <script src="//example.com/scripts/script.js"></script>
             </body>
             </html>
-          `
-        }
+          `,
+        },
       },
       {
         request: 'GET https://example.com/scripts/script.js',
         response: {
           headers: {
-            'Content-Type': 'application/javascript'
+            'Content-Type': 'application/javascript',
           },
           body: `
             alert('Hello, world!');
-          `
-        }
-      }
+          `,
+        },
+      },
     ]);
 
     await main(['-s', '-o', outputDir, 'https://example.com/'], mockConsole);
@@ -172,13 +170,13 @@ describe('main', function() {
     );
   });
 
-  it('should download third party referenced assets and store them locally in a structure that reflects the original origins', async function() {
+  it('should download third party referenced assets and store them locally in a structure that reflects the original origins', async function () {
     httpception([
       {
         request: 'GET https://example.com/',
         response: {
           headers: {
-            'Content-Type': 'text/html; charset=utf-8'
+            'Content-Type': 'text/html; charset=utf-8',
           },
           body: `
             <!DOCTYPE html>
@@ -187,20 +185,20 @@ describe('main', function() {
             <body><script src="https://thirdparty.com/scripts/script.js"></script>
             </body>
             </html>
-          `
-        }
+          `,
+        },
       },
       {
         request: 'GET https://thirdparty.com/scripts/script.js',
         response: {
           headers: {
-            'Content-Type': 'application/javascript'
+            'Content-Type': 'application/javascript',
           },
           body: `
             alert('Hello, world!');
-          `
-        }
-      }
+          `,
+        },
+      },
     ]);
 
     await main(['-s', '-o', outputDir, 'https://example.com/'], mockConsole);
@@ -223,13 +221,13 @@ describe('main', function() {
     );
   });
 
-  it('should ensure that the downloaded files have an extension (to make them more likely to be served with the correct C-T)', async function() {
+  it('should ensure that the downloaded files have an extension (to make them more likely to be served with the correct C-T)', async function () {
     httpception([
       {
         request: 'GET https://example.com/',
         response: {
           headers: {
-            'Content-Type': 'text/html; charset=utf-8'
+            'Content-Type': 'text/html; charset=utf-8',
           },
           body: `
             <!DOCTYPE html>
@@ -239,35 +237,35 @@ describe('main', function() {
               <script src="script"></script>
             </body>
             </html>
-          `
-        }
+          `,
+        },
       },
       {
         request: 'GET https://example.com/script',
         response: {
           headers: {
-            'Content-Type': 'application/javascript'
+            'Content-Type': 'application/javascript',
           },
-          body: "alert('script');"
-        }
-      }
+          body: "alert('script');",
+        },
+      },
     ]);
 
     await main(['-s', '-o', outputDir, 'https://example.com/'], mockConsole);
 
     expect(await readdirAsync(outputDir), 'to equal', [
       'index.html',
-      'script.js'
+      'script.js',
     ]);
   });
 
-  it('should not break when an asset collides with the name of a directory', async function() {
+  it('should not break when an asset collides with the name of a directory', async function () {
     httpception([
       {
         request: 'GET https://example.com/',
         response: {
           headers: {
-            'Content-Type': 'text/html; charset=utf-8'
+            'Content-Type': 'text/html; charset=utf-8',
           },
           body: `
             <!DOCTYPE html>
@@ -281,54 +279,54 @@ describe('main', function() {
               <script src="script.js/foo.js"></script>
             </body>
             </html>
-          `
-        }
+          `,
+        },
       },
       {
         request: 'GET https://example.com/script.js',
         response: {
           headers: {
-            'Content-Type': 'application/javascript'
+            'Content-Type': 'application/javascript',
           },
-          body: "alert('script');"
-        }
+          body: "alert('script');",
+        },
       },
       {
         request: 'GET https://example.com/script.js/bar.js/quux.js',
         response: {
           headers: {
-            'Content-Type': 'application/javascript'
+            'Content-Type': 'application/javascript',
           },
-          body: "alert('bar/quux');"
-        }
+          body: "alert('bar/quux');",
+        },
       },
       {
         request: 'GET https://example.com/script.js/bar.js',
         response: {
           headers: {
-            'Content-Type': 'application/javascript'
+            'Content-Type': 'application/javascript',
           },
-          body: "alert('bar');"
-        }
+          body: "alert('bar');",
+        },
       },
       {
         request: 'GET https://example.com/script.js/bar.js/quux.js/baz.js',
         response: {
           headers: {
-            'Content-Type': 'application/javascript'
+            'Content-Type': 'application/javascript',
           },
-          body: "alert('bar/quux/baz');"
-        }
+          body: "alert('bar/quux/baz');",
+        },
       },
       {
         request: 'GET https://example.com/script.js/foo.js',
         response: {
           headers: {
-            'Content-Type': 'application/javascript'
+            'Content-Type': 'application/javascript',
           },
-          body: "alert('foo');"
-        }
-      }
+          body: "alert('foo');",
+        },
+      },
     ]);
 
     await main(['-s', '-o', outputDir, 'https://example.com/'], mockConsole);
@@ -336,7 +334,7 @@ describe('main', function() {
     expect(await readdirAsync(outputDir), 'to equal', [
       'index.html',
       'script-1.js',
-      'script.js'
+      'script.js',
     ]);
 
     expect(
@@ -378,13 +376,13 @@ describe('main', function() {
     );
   });
 
-  it('should handle cyclic references', async function() {
+  it('should handle cyclic references', async function () {
     httpception([
       {
         request: 'GET https://example.com/',
         response: {
           headers: {
-            'Content-Type': 'text/html; charset=utf-8'
+            'Content-Type': 'text/html; charset=utf-8',
           },
           body: `
             <!DOCTYPE html>
@@ -393,28 +391,28 @@ describe('main', function() {
             <body><script src="script.js"></script>
             </body>
             </html>
-          `
-        }
+          `,
+        },
       },
       {
         request: 'GET https://example.com/script.js',
         response: {
           headers: {
-            'Content-Type': 'application/javascript'
+            'Content-Type': 'application/javascript',
           },
           body:
-            "alert('Hello, look over there: ' + 'anotherscript.js'.toString('url'));"
-        }
+            "alert('Hello, look over there: ' + 'anotherscript.js'.toString('url'));",
+        },
       },
       {
         request: 'GET https://example.com/anotherscript.js',
         response: {
           headers: {
-            'Content-Type': 'application/javascript'
+            'Content-Type': 'application/javascript',
           },
-          body: "alert('And here: ' + 'script.js'.toString('url'));"
-        }
-      }
+          body: "alert('And here: ' + 'script.js'.toString('url'));",
+        },
+      },
     ]);
 
     await main(['-s', '-o', outputDir, 'https://example.com/'], mockConsole);
@@ -435,23 +433,23 @@ describe('main', function() {
     );
   });
 
-  describe('with http redirects', function() {
-    it('should handle a redirect of the entry point', async function() {
+  describe('with http redirects', function () {
+    it('should handle a redirect of the entry point', async function () {
       httpception([
         {
           request: 'GET http://example.com/',
           response: {
             statusCode: 301,
             headers: {
-              Location: 'https://somewhereelse.com/'
-            }
-          }
+              Location: 'https://somewhereelse.com/',
+            },
+          },
         },
         {
           request: 'GET https://somewhereelse.com/',
           response: {
             headers: {
-              'Content-Type': 'text/html; charset=utf-8'
+              'Content-Type': 'text/html; charset=utf-8',
             },
             body: `
               <!DOCTYPE html>
@@ -460,25 +458,25 @@ describe('main', function() {
               <body><script src="script.js"></script>
               </body>
               </html>
-            `
-          }
+            `,
+          },
         },
         {
           request: 'GET https://somewhereelse.com/script.js',
           response: {
             headers: {
-              'Content-Type': 'application/javascript'
+              'Content-Type': 'application/javascript',
             },
-            body: "alert('Hello, world!');"
-          }
-        }
+            body: "alert('Hello, world!');",
+          },
+        },
       ]);
 
       await main(['-s', '-o', outputDir, 'http://example.com/'], mockConsole);
 
       expect(await readdirAsync(outputDir), 'to equal', [
         'index.html',
-        'script.js'
+        'script.js',
       ]);
 
       expect(
@@ -500,13 +498,13 @@ describe('main', function() {
       );
     });
 
-    it('should rewrite the incoming relations to point at the target asset', async function() {
+    it('should rewrite the incoming relations to point at the target asset', async function () {
       httpception([
         {
           request: 'GET https://example.com/',
           response: {
             headers: {
-              'Content-Type': 'text/html; charset=utf-8'
+              'Content-Type': 'text/html; charset=utf-8',
             },
             body: `
               <!DOCTYPE html>
@@ -515,27 +513,27 @@ describe('main', function() {
               <body><script src="scripts/script.js"></script>
               </body>
               </html>
-            `
-          }
+            `,
+          },
         },
         {
           request: 'GET https://example.com/scripts/script.js',
           response: {
             statusCode: 301,
             headers: {
-              Location: 'https://example.com/some/other/script.js'
-            }
-          }
+              Location: 'https://example.com/some/other/script.js',
+            },
+          },
         },
         {
           request: 'GET https://example.com/some/other/script.js',
           response: {
             headers: {
-              'Content-Type': 'application/javascript'
+              'Content-Type': 'application/javascript',
             },
-            body: "alert('Hello, world!');"
-          }
-        }
+            body: "alert('Hello, world!');",
+          },
+        },
       ]);
 
       await main(['-s', '-o', outputDir, 'https://example.com/'], mockConsole);
@@ -559,14 +557,14 @@ describe('main', function() {
     });
   });
 
-  describe('in selfContained:true mode', function() {
-    it('should inline all referenced assets and output a single file', async function() {
+  describe('in selfContained:true mode', function () {
+    it('should inline all referenced assets and output a single file', async function () {
       httpception([
         {
           request: 'GET https://example.com/',
           response: {
             headers: {
-              'Content-Type': 'text/html; charset=utf-8'
+              'Content-Type': 'text/html; charset=utf-8',
             },
             body: `
               <!DOCTYPE html>
@@ -575,20 +573,20 @@ describe('main', function() {
               <body><script src="scripts/script.js"></script>
               </body>
               </html>
-            `
-          }
+            `,
+          },
         },
         {
           request: 'GET https://example.com/scripts/script.js',
           response: {
             headers: {
-              'Content-Type': 'application/javascript'
+              'Content-Type': 'application/javascript',
             },
             body: `
               alert('Hello, world!');
-            `
-          }
-        }
+            `,
+          },
+        },
       ]);
 
       await main(
@@ -597,13 +595,13 @@ describe('main', function() {
           '--self-contained',
           '-o',
           `${outputDir}/single.html`,
-          'https://example.com/'
+          'https://example.com/',
         ],
         mockConsole
       );
 
       expect(await readdirAsync(pathModule.resolve(outputDir)), 'to equal', [
-        'single.html'
+        'single.html',
       ]);
 
       expect(
@@ -617,14 +615,14 @@ describe('main', function() {
     });
   });
 
-  describe('in omitScripts:true mode', function() {
-    it('should strip references to JavaScript', async function() {
+  describe('in omitScripts:true mode', function () {
+    it('should strip references to JavaScript', async function () {
       httpception([
         {
           request: 'GET https://example.com/',
           response: {
             headers: {
-              'Content-Type': 'text/html; charset=utf-8'
+              'Content-Type': 'text/html; charset=utf-8',
             },
             body: `
               <!DOCTYPE html>
@@ -633,9 +631,9 @@ describe('main', function() {
               <body><script src="scripts/script.js"></script>
               </body>
               </html>
-            `
-          }
-        }
+            `,
+          },
+        },
       ]);
 
       await main(
@@ -644,7 +642,7 @@ describe('main', function() {
       );
 
       expect(await readdirAsync(pathModule.resolve(outputDir)), 'to equal', [
-        'index.html'
+        'index.html',
       ]);
 
       expect(
@@ -657,13 +655,13 @@ describe('main', function() {
       );
     });
 
-    it('should unwrap <noscript> ... </noscript> blocks', async function() {
+    it('should unwrap <noscript> ... </noscript> blocks', async function () {
       httpception([
         {
           request: 'GET https://example.com/',
           response: {
             headers: {
-              'Content-Type': 'text/html; charset=utf-8'
+              'Content-Type': 'text/html; charset=utf-8',
             },
             body: `
               <!DOCTYPE html>
@@ -671,9 +669,9 @@ describe('main', function() {
               <head></head>
               <body><noscript>foo<span>bar</span>quux</noscript></body>
               </html>
-            `
-          }
-        }
+            `,
+          },
+        },
       ]);
 
       await main(
@@ -682,7 +680,7 @@ describe('main', function() {
       );
 
       expect(await readdirAsync(pathModule.resolve(outputDir)), 'to equal', [
-        'index.html'
+        'index.html',
       ]);
 
       expect(
@@ -695,13 +693,13 @@ describe('main', function() {
       ).and('not to contain', 'noscript');
     });
 
-    it('should rewrite relations found in the <noscript> blocks', async function() {
+    it('should rewrite relations found in the <noscript> blocks', async function () {
       httpception([
         {
           request: 'GET https://example.com/',
           response: {
             headers: {
-              'Content-Type': 'text/html; charset=utf-8'
+              'Content-Type': 'text/html; charset=utf-8',
             },
             body: `
               <!DOCTYPE html>
@@ -709,18 +707,18 @@ describe('main', function() {
               <head></head>
               <body><noscript><link rel="stylesheet" href="https://3rdparty.com/styles.css"></noscript></body>
               </html>
-            `
-          }
+            `,
+          },
         },
         {
           request: 'GET https://3rdparty.com/styles.css',
           response: {
             headers: {
-              'Content-Type': 'text/css'
+              'Content-Type': 'text/css',
             },
-            body: 'body { color: maroon; }'
-          }
-        }
+            body: 'body { color: maroon; }',
+          },
+        },
       ]);
 
       await main(
@@ -730,7 +728,7 @@ describe('main', function() {
 
       expect(await readdirAsync(pathModule.resolve(outputDir)), 'to equal', [
         '3rdparty.com',
-        'index.html'
+        'index.html',
       ]);
 
       expect(
@@ -744,23 +742,23 @@ describe('main', function() {
     });
   });
 
-  describe('with --header|-H', function() {
-    it('should accept one custom header', async function() {
+  describe('with --header|-H', function () {
+    it('should accept one custom header', async function () {
       httpception([
         {
           request: {
             url: 'GET https://example.com/',
             headers: {
-              Foo: 123
-            }
+              Foo: 123,
+            },
           },
           response: {
             headers: {
-              'Content-Type': 'text/html; charset=utf-8'
+              'Content-Type': 'text/html; charset=utf-8',
             },
-            body: '<!DOCTYPE html><html><head></head><body></body></html>'
-          }
-        }
+            body: '<!DOCTYPE html><html><head></head><body></body></html>',
+          },
+        },
       ]);
 
       await main(
@@ -769,23 +767,23 @@ describe('main', function() {
       );
     });
 
-    it('should accept two different custom headers', async function() {
+    it('should accept two different custom headers', async function () {
       httpception([
         {
           request: {
             url: 'GET https://example.com/',
             headers: {
               Foo: 123,
-              bar: 'quux'
-            }
+              bar: 'quux',
+            },
           },
           response: {
             headers: {
-              'Content-Type': 'text/html; charset=utf-8'
+              'Content-Type': 'text/html; charset=utf-8',
             },
-            body: '<!DOCTYPE html><html><head></head><body></body></html>'
-          }
-        }
+            body: '<!DOCTYPE html><html><head></head><body></body></html>',
+          },
+        },
       ]);
 
       await main(
@@ -797,28 +795,28 @@ describe('main', function() {
           'bar: quux',
           '-o',
           outputDir,
-          'https://example.com/'
+          'https://example.com/',
         ],
         mockConsole
       );
     });
 
-    it('should accept three values of the same header', async function() {
+    it('should accept three values of the same header', async function () {
       httpception([
         {
           request: {
             url: 'GET https://example.com/',
             headers: {
-              Foo: 'bar, quux, baz'
-            }
+              Foo: 'bar, quux, baz',
+            },
           },
           response: {
             headers: {
-              'Content-Type': 'text/html; charset=utf-8'
+              'Content-Type': 'text/html; charset=utf-8',
             },
-            body: '<!DOCTYPE html><html><head></head><body></body></html>'
-          }
-        }
+            body: '<!DOCTYPE html><html><head></head><body></body></html>',
+          },
+        },
       ]);
 
       await main(
@@ -832,21 +830,21 @@ describe('main', function() {
           'Foo: baz',
           '-o',
           outputDir,
-          'https://example.com/'
+          'https://example.com/',
         ],
         mockConsole
       );
     });
   });
 
-  describe('with --pretty', function() {
-    it('should pretty-print assets', async function() {
+  describe('with --pretty', function () {
+    it('should pretty-print assets', async function () {
       httpception([
         {
           request: 'GET https://example.com/',
           response: {
             headers: {
-              'Content-Type': 'text/html; charset=utf-8'
+              'Content-Type': 'text/html; charset=utf-8',
             },
             body: `
               <!DOCTYPE html>
@@ -855,18 +853,18 @@ describe('main', function() {
               <body><script src="script.js"></script>
               </body>
               </html>
-            `
-          }
+            `,
+          },
         },
         {
           request: 'GET https://example.com/script.js',
           response: {
             headers: {
-              'Content-Type': 'application/javascript'
+              'Content-Type': 'application/javascript',
             },
-            body: `function greeter(){alert('Hello, world!');}greeter()`
-          }
-        }
+            body: `function greeter(){alert('Hello, world!');}greeter()`,
+          },
+        },
       ]);
 
       await main(
@@ -885,14 +883,14 @@ describe('main', function() {
     });
   });
 
-  describe('with a JavaScriptStaticUrl relation', function() {
-    it('should keep a JavaScriptStaticUrl as a root-relative url (not convert it to a relative one like the other relation types)', async function() {
+  describe('with a JavaScriptStaticUrl relation', function () {
+    it('should keep a JavaScriptStaticUrl as a root-relative url (not convert it to a relative one like the other relation types)', async function () {
       httpception([
         {
           request: 'GET https://example.com/',
           response: {
             headers: {
-              'Content-Type': 'text/html; charset=utf-8'
+              'Content-Type': 'text/html; charset=utf-8',
             },
             body: `
               <!DOCTYPE html>
@@ -904,18 +902,18 @@ describe('main', function() {
                 </script>
               </body>
               </html>
-            `
-          }
+            `,
+          },
         },
         {
           request: 'GET https://example.com/foo.txt',
           response: {
             headers: {
-              'Content-Type': 'text/css'
+              'Content-Type': 'text/css',
             },
-            body: 'Whoa!'
-          }
-        }
+            body: 'Whoa!',
+          },
+        },
       ]);
 
       await main(['-s', '-o', outputDir, 'https://example.com/'], mockConsole);
@@ -930,13 +928,13 @@ describe('main', function() {
       );
     });
 
-    it('should convert a JavaScriptStaticUrl on a foreign domain to a root-relative url (not a relative one like the other relation types)', async function() {
+    it('should convert a JavaScriptStaticUrl on a foreign domain to a root-relative url (not a relative one like the other relation types)', async function () {
       httpception([
         {
           request: 'GET https://example.com/',
           response: {
             headers: {
-              'Content-Type': 'text/html; charset=utf-8'
+              'Content-Type': 'text/html; charset=utf-8',
             },
             body: `
               <!DOCTYPE html>
@@ -948,18 +946,18 @@ describe('main', function() {
                 </script>
               </body>
               </html>
-            `
-          }
+            `,
+          },
         },
         {
           request: 'GET https://somewhereelse.com/foo.txt',
           response: {
             headers: {
-              'Content-Type': 'text/css'
+              'Content-Type': 'text/css',
             },
-            body: 'Whoa!'
-          }
-        }
+            body: 'Whoa!',
+          },
+        },
       ]);
 
       await main(['-s', '-o', outputDir, 'https://example.com/'], mockConsole);
