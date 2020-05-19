@@ -32,7 +32,7 @@
   "homepage": "https://github.com/papandreou/bringhome#readme",
   "dependencies": {
     "@gustavnikolaj/async-main-wrap": "^3.0.0",
-    "assetgraph": "6.0.5",
+    "assetgraph": "6.0.6",
     "lodash.uniq": "^4.5.0",
     "urltools": "^0.4.1",
     "yargs": "^15.0.1"
