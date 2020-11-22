@@ -55,7 +55,7 @@
     "rimraf": "^3.0.0",
     "sinon": "^9.0.1",
     "unexpected": "^11.0.0",
-    "unexpected-sinon": "^10.10.1"
+    "unexpected-sinon": "^11.0.0"
   },
   "nyc": {
     "include": [
