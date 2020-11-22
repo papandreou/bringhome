@@ -35,3 +35,7 @@ Options:
   --silent, -s      Do not write anything to stdout
                                               [boolean] [default: false]
 ```
+
+## Releases
+
+[Changelog](https://github.com/papandreou/bringhome/blob/master/CHANGELOG.md)
