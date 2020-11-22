@@ -6,7 +6,7 @@
     "node": ">=8.0.0"
   },
   "scripts": {
-    "lint": "eslint . && prettier --check '**/*.js'",
+    "lint": "eslint . && prettier --check '**/*.{js,json,md}'",
     "test": "mocha",
     "test:ci": "npm run coverage",
     "coverage": "nyc --reporter=lcov --reporter=text -- mocha --reporter dot && echo google-chrome coverage/lcov-report/index.html"
