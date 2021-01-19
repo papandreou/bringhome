@@ -1,3 +1,29 @@
+### v2.0.1 (2021-01-19)
+
+#### Pull requests
+
+- [#88](https://github.com/papandreou/bringhome/pull/88) Upgrade assetgraph to version 6.4.4 ([depfu[bot]](mailto:23717796+depfu[bot]@users.noreply.github.com))
+- [#87](https://github.com/papandreou/bringhome/pull/87) Upgrade assetgraph to version 6.4.2 ([depfu[bot]](mailto:23717796+depfu[bot]@users.noreply.github.com))
+- [#85](https://github.com/papandreou/bringhome/pull/85) Upgrade assetgraph to version 6.4.0 ([depfu[bot]](mailto:23717796+depfu[bot]@users.noreply.github.com))
+- [#84](https://github.com/papandreou/bringhome/pull/84) Upgrade eslint-config-prettier to version 7.0.0 ([depfu[bot]](mailto:23717796+depfu[bot]@users.noreply.github.com))
+- [#83](https://github.com/papandreou/bringhome/pull/83) Upgrade eslint-plugin-standard to version 5.0.0 ([depfu[bot]](mailto:23717796+depfu[bot]@users.noreply.github.com))
+- [#81](https://github.com/papandreou/bringhome/pull/81) Upgrade unexpected-sinon to version 11.0.0 ([depfu[bot]](mailto:23717796+depfu[bot]@users.noreply.github.com))
+- [#82](https://github.com/papandreou/bringhome/pull/82) Upgrade prettier to version 2.2.0 ([depfu[bot]](mailto:23717796+depfu[bot]@users.noreply.github.com))
+- [#79](https://github.com/papandreou/bringhome/pull/79) Upgrade assetgraph to version 6.3.0 ([depfu[bot]](mailto:23717796+depfu[bot]@users.noreply.github.com))
+- [#78](https://github.com/papandreou/bringhome/pull/78) Upgrade assetgraph to version 6.2.2 ([depfu[bot]](mailto:23717796+depfu[bot]@users.noreply.github.com))
+- [#77](https://github.com/papandreou/bringhome/pull/77) Upgrade eslint-config-standard to version 16.0.1 ([depfu[bot]](mailto:23717796+depfu[bot]@users.noreply.github.com))
+- [#75](https://github.com/papandreou/bringhome/pull/75) Upgrade eslint-config-standard to version 15.0.0 ([depfu[bot]](mailto:23717796+depfu[bot]@users.noreply.github.com))
+- [#74](https://github.com/papandreou/bringhome/pull/74) Upgrade assetgraph to version 6.2.1 ([depfu[bot]](mailto:23717796+depfu[bot]@users.noreply.github.com))
+
+#### Commits to master
+
+- [Update httpception to ^4.0.1](https://github.com/papandreou/bringhome/commit/d88bf3a96101776221d3ae42d08d11bfe81d94b2) ([Andreas Lind](mailto:andreaslindpetersen@gmail.com))
+- [Add CHANGELOG.md + offline-github-changelog integration](https://github.com/papandreou/bringhome/commit/a0be07460be04135f954b9c5ab18f13057c52615) ([Andreas Lind](mailto:andreaslindpetersen@gmail.com))
+- [Sanitize .prettierignore](https://github.com/papandreou/bringhome/commit/83534d3c399fe3b695fe128bd9de2a3184e1272c) ([Andreas Lind](mailto:andreaslindpetersen@gmail.com))
+- [Also check \*.json and \*.md with prettier](https://github.com/papandreou/bringhome/commit/c5cc4a5ae5fbd30fef7ed90ba8147728e587c6d2) ([Andreas Lind](mailto:andreaslindpetersen@gmail.com))
+- [Update unexpected + plugins](https://github.com/papandreou/bringhome/commit/2ceb7d647d1a2ecca5619515802c1676a7b09bfb) ([Andreas Lind](mailto:andreaslindpetersen@gmail.com))
+- [+1 more](https://github.com/papandreou/bringhome/compare/v2.0.0...v2.0.1)
+
 ### v2.0.0 (2020-09-11)
 
 #### Pull requests
@@ -162,5 +188,4 @@
 - [Rewrite to relative urls whenever possible](https://github.com/papandreou/bringhome/commit/519089165500d072cbe32b6c957c1a6a4e78631e) ([Andreas Lind](mailto:andreaslindpetersen@gmail.com))
 - [Don't return anything from main.js to appease async-main-wrap](https://github.com/papandreou/bringhome/commit/c71d83d31ca10abbc21299e5b6dc5feea4b95207) ([Andreas Lind](mailto:andreaslindpetersen@gmail.com))
 - [Omit other types of relations that point at JavaScript when --omit-scripts is passed](https://github.com/papandreou/bringhome/commit/4a6dfe238e7a45c3d8b1c92aa21e6c13ccb60b3e) ([Andreas Lind](mailto:andreaslindpetersen@gmail.com))
-- [+5 more](https://github.com/papandreou/bringhome/compare/653d0f1aa74f08c6fc9222169b1c1551eb1be9cb%5E...v1.0.0)
-
+- [+5 more](https://github.com/papandreou/bringhome/compare/4a6dfe238e7a45c3d8b1c92aa21e6c13ccb60b3e...v1.0.0)
