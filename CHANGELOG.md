@@ -1,3 +1,13 @@
+### v2.0.2 (2021-01-23)
+
+#### Pull requests
+
+- [#89](https://github.com/papandreou/bringhome/pull/89) Upgrade assetgraph to version 6.4.5 ([depfu[bot]](mailto:23717796+depfu[bot]@users.noreply.github.com))
+
+#### Commits to master
+
+- [Use a ^ version range for assetgraph](https://github.com/papandreou/bringhome/commit/916753b3c7b6b894f44643106a8d27a41dea5715) ([Andreas Lind](mailto:andreas.lind@peakon.com))
+
 ### v2.0.1 (2021-01-19)
 
 #### Pull requests
