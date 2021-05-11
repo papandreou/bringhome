@@ -32,8 +32,7 @@ describe('main', function () {
           headers: {
             'Content-Type': 'text/html; charset=utf-8',
           },
-          body:
-            '<!DOCTYPE html><html><head></head><body><p>Hello, world!</p></body></html>',
+          body: '<!DOCTYPE html><html><head></head><body><p>Hello, world!</p></body></html>',
         },
       },
     ]);
@@ -400,8 +399,7 @@ describe('main', function () {
           headers: {
             'Content-Type': 'application/javascript',
           },
-          body:
-            "alert('Hello, look over there: ' + 'anotherscript.js'.toString('url'));",
+          body: "alert('Hello, look over there: ' + 'anotherscript.js'.toString('url'));",
         },
       },
       {
